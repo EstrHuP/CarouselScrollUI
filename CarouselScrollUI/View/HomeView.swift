@@ -17,7 +17,7 @@ struct HomeView: View {
             VStack(spacing: 15) {
                 HStack(spacing: 12) {
                     Button(action: {
-                        
+                        // menu action
                     }, label: {
                         Image(systemName: "line.3.horizontal")
                             .font(.title)
@@ -48,12 +48,20 @@ struct HomeView: View {
                                 // In order to move the card in reverse direction (Parallax efect)
                                 GeometryReader { proxy in
                                     let cardSize = proxy.size
+                                    /// Simple Parallax effect (1)
+                                    // let minX = proxy.frame(in: .scrollView).minX - 30.0
+                                    let minX = min((proxy.frame(in: .scrollView).minX - 30.0 ) * 1.4, size.width * 1.5)
                                     
                                     Image(card.image)
                                         .resizable()
                                         .aspectRatio(contentMode: .fill)
+                                        .offset(x: -minX)
+                                        .frame(width: proxy.size.width * 2.5)
                                         .frame(width: cardSize.width,
                                                height: cardSize.height)
+                                        .overlay {
+                                           OverlayView(card)
+                                        }
                                         .clipShape(.rect(cornerRadius: 20))
                                         .shadow(color: .black.opacity(0.25),
                                                 radius: 8,
@@ -67,7 +75,7 @@ struct HomeView: View {
                                 /// Scroll Animation
                                 .scrollTransition(.interactive,
                                                   axis: .horizontal) { view, phase in
-                                    view.scaleEffect(phase.isIdentity ? 1 : 0.75)
+                                    view.scaleEffect(phase.isIdentity ? 1 : 0.95)
                                 }
                             }
                         }
@@ -89,6 +97,33 @@ struct HomeView: View {
             .padding(15)
         }
         .scrollIndicators(.hidden)
+    }
+    
+    @ViewBuilder
+    func OverlayView(_ card: TripCardModel) -> some View {
+        ZStack(alignment: .bottomLeading) {
+            LinearGradient(colors: [
+                .clear,
+                .clear,
+                .clear,
+                .clear,
+                .clear,
+                .black.opacity(0.1),
+                .black.opacity(0.5),
+                .black
+            ], startPoint: .top, endPoint: .bottom)
+            
+            VStack(alignment: .leading, spacing: 4, content: {
+                Text(card.title)
+                    .font(.title2)
+                    .fontWeight(.black)
+                    .foregroundStyle(.white)
+                Text(card.subTitle)
+                    .font(.callout)
+                    .foregroundStyle(.white.opacity(0.8))
+            })
+            .padding(20)
+        }
     }
 }
 
